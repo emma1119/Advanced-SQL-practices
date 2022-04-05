@@ -1,0 +1,72 @@
+# Write your MySQL query statement below
+
+# Write an SQL query to find the most recent order(s) of each product.
+
+# Return the result table ordered by product_name in ascending order and in case of a tie by the product_id in ascending order. If there still a tie, order them by order_id in ascending order.
+
+# LeetCode）
+# https://leetcode-cn.com/problems/the-most-recent-orders-for-each-product
+
+select 
+b.product_name,
+a.product_id,
+order_id,
+order_date
+from 
+(select 
+product_id,
+order_id,
+order_date,
+dense_rank() over (partition by product_id order by order_date desc) as rk
+from orders) as a 
+left join 
+products as b 
+on a.product_id = b.product_id
+where rk =1
+order by b.product_name , a.product_id, order_id
+
+
+# Write your MySQL query statement below
+
+
+
+with unit as 
+(select 
+customer_id,
+product_id,
+count(*) as ct
+from orders
+group by customer_id,
+product_id) 
+select 
+c.customer_id,
+c.product_id,
+b.product_name
+from 
+(select customer_id,
+ max(ct) as  ct
+from unit
+group by 
+customer_id) as a 
+inner join unit as c 
+on a.customer_id =c.customer_id and a.ct = c.ct
+inner join 
+products as b 
+on c.product_id = b.product_id
+
+
+
+
+# Write your MySQL query statement below
+
+# Write an SQL query to find all the people who viewed more than one article on the same date.
+
+select distinct id from 
+(select 
+viewer_id as id
+,view_date
+from 
+views 
+group by viewer_id, view_date
+having count(distinct article_id) > 1)  as a 
+
