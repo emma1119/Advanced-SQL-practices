@@ -25,3 +25,54 @@ on a.rk+1 = b.rk and a.user_id = b.user_id
 group by a.user_id
 order by user_id 
 
+#1677. Product's Worth Over Invoices
+
+# when taking the sum/aggregation, always think about which table has the full list. e.g. product table and apply ifnull (, 0)!!!
+# think about null cases in aggregation
+
+select 
+b.name,
+ifnull(sum(a.rest),0) as rest,
+ifnull(sum(a.paid),0) as paid,
+ifnull(sum(a.canceled),0) as canceled,
+ifnull(sum(a.refunded),0) as refunded
+from 
+product as b 
+left join 
+invoice as a 
+on a.product_id = b.product_id
+group by b.name
+order by b.name 
+
+
+184. Department Highest Salary
+
+#double check join field names
+
+select 
+b.name as Department,
+a.name as Employee,
+a.salary as Salary 
+from 
+(select 
+departmentId, 
+name,
+salary,
+rank() over (partition by departmentid order by salary desc) as rk 
+from employee ) as a 
+left join 
+Department as b 
+on a.departmentId = b.id 
+where a.rk = 1
+
+#176. Second Highest Salary
+
+# the tricky part is in order to show null when there is no value, we need to add a select query from the outside 
+# select ifnull((select...), null) as a 
+# this will show null instead of returning blank
+
+select ifnull((
+    select distinct salary 
+    from Employee 
+    order by salary desc limit 1, 1), null)
+     as SecondHighestSalary 
