@@ -1,0 +1,65 @@
+#1699. Number of Calls Between Two Persons
+
+# two duplicated rows means two calls!! so use union all instead of union to combine two orders 
+
+
+# Write your MySQL query statement below
+
+select 
+a.from_id as person1,
+a.to_id as person2,
+count(*) as call_count,
+sum(duration) as total_duration
+from 
+(
+select from_id,
+to_id,
+duration
+from calls 
+where 
+from_id < to_id
+union all
+select 
+to_id as from_id,
+from_id as to_id,
+duration
+from calls 
+where from_id > to_id
+) a 
+group by 
+a.from_id,
+a.to_id
+
+
+#1613. Find the Missing IDs
+
+
+# build a recursive table by select n union all select n+1 from the t table itself where condition. 
+
+with recursive t1 as 
+(select 1 as n union all 
+select n+1 from t1
+where n+1 <=100 and n+1 < (select max(customer_id) from customers)
+)
+select t1.n as ids 
+from t1
+left join 
+customers as b 
+on t1.n = b.customer_id
+where b.customer_id is null
+order by ids
+
+
+#1607. Sellers With No Sales
+# join on means you filter before the table is joined!!
+
+select 
+b.seller_name as seller_name
+from 
+seller as b 
+left join
+orders as a 
+on a.seller_id = b.seller_id 
+and year(sale_date) = 2020
+where a.seller_id is null
+order by b.seller_name asc
