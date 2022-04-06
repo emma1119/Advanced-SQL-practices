@@ -1,0 +1,27 @@
+#1709. Biggest Window Between Visits
+
+#self join on user id and rk and rk+1 to identify the largest window between two visits. double check on the join condition
+
+# Write your MySQL query statement below
+with t1 as 
+(select 
+user_id,
+visit_date,
+row_number() over (partition by user_id order by visit_date) as rk 
+from 
+(
+select user_id, visit_date
+from uservisits 
+union 
+select user_id, date('2021-01-01') as visit_date 
+from uservisits
+) as a ) 
+select 
+a.user_id,
+max(datediff(b.visit_date, a.visit_date)) as biggest_window
+from t1 as a 
+left join t1 as b 
+on a.rk+1 = b.rk and a.user_id = b.user_id
+group by a.user_id
+order by user_id 
+
