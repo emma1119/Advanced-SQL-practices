@@ -21,6 +21,8 @@ and a.login < b.login
 #1767. Find the Subtasks That Did Not Execute
 #Write an SQL query to report the IDs of the missing subtasks for each task_id.
 
+
+# create a recursive table and left join on recursive n <= count n
 # Write your MySQL query statement below
 with recursive t as 
 (
