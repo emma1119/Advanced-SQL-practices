@@ -1,0 +1,20 @@
+#1747. Leetflex Banned Accounts
+#Write an SQL query to find the account_id of the accounts that should be banned from Leetflex. 
+# An account should be banned if it was logged in at some moment from two different IP addresses.
+
+LeetCode
+https://leetcode-cn.com/problems/leetflex-banned-accounts
+
+
+# Write your MySQL query statement below
+select 
+distinct
+a.account_id 
+from loginfo as a 
+inner join 
+loginfo as b 
+on a.account_id = b.account_id
+and a.ip_address != b.ip_address
+and a.logout >= b.login    # the definition of overlapping is event A logged on first and logged out later than event B 
+and a.login < b.login
+
