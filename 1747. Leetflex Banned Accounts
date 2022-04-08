@@ -18,3 +18,23 @@ and a.ip_address != b.ip_address
 and a.logout >= b.login    # the definition of overlapping is event A logged on first and logged out later than event B 
 and a.login < b.login
 
+#1767. Find the Subtasks That Did Not Execute
+#Write an SQL query to report the IDs of the missing subtasks for each task_id.
+
+# Write your MySQL query statement below
+with recursive t as 
+(
+    select 1 as ct from tasks 
+    union all 
+    select ct + 1 from t where ct < (select max(subtasks_count) from Tasks) 
+)
+select  distinct
+a.task_id,b.ct subtask_id
+from 
+Tasks  a 
+inner join
+t b
+on a.subtasks_count>=ct 
+left join 
+Executed c on c.task_id=a.task_id and c.subtask_id=b.ct
+where c.task_id is null
