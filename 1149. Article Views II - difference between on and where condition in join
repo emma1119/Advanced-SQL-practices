@@ -4,6 +4,8 @@
 
 # Return the result table ordered by product_name in ascending order and in case of a tie by the product_id in ascending order. If there still a tie, order them by order_id in ascending order.
 
+#184. Department Highest Salary
+
 # LeetCode）
 # https://leetcode-cn.com/problems/the-most-recent-orders-for-each-product
 
@@ -24,6 +26,19 @@ products as b
 on a.product_id = b.product_id
 where rk =1
 order by b.product_name , a.product_id, order_id
+
+
+
+# for inner join, there is no difference between on and where condition
+
+# for a left join b, when apply condition after on : a.number=1 ， the records from table a will all exists in final results, but those with a.number!=1 will all get nulls for matching b.feilds
+# because on applies to the joining action only 
+# when apply condition after where: a.number =1, the record where a.number!=1 will be filtered out from the final results. this is applied after joinning
+
+
+# for a left join b, when apply condition after on : b.number=1 ， the records from table b matching a will all exists in final results, but those with b.number!=1 will show nulls for b.felds
+# because on applies to the joining action only 
+# when apply condition after where: a.number =1, the record only shoews b.number=1 records in the final results. this is applied after joinning
 
 
 # Write your MySQL query statement below
