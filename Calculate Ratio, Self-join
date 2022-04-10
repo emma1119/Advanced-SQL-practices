@@ -168,3 +168,49 @@ min(log_id) as start_id,
 max(log_id) as end_id
 from new_table a 
 group by delta
+
+
+#1811. Find Interview Candidates
+#self join on medal winner, consecutive winner
+
+# Write your MySQL query statement below
+
+#dense_rank() partition by user_id!!! understand the aggregation level should be by id and compare to the context_id
+ 
+with table1 as 
+(
+select 
+contest_id,
+gold_medal as user_id
+from contests
+union all
+select
+contest_id,
+silver_medal as user_id
+from contests
+union all
+select
+contest_id,
+bronze_medal  as user_id
+ from contests
+)
+select 
+b.name,
+b.mail
+from contests as a
+left join users as b 
+on a.gold_medal = b.user_id
+group by b.name, b.mail
+having count(distinct a.contest_id) >2
+union 
+select 
+c.name,
+c.mail
+from 
+(select *,
+contest_id -(dense_rank() over (partition by user_id order by contest_id)) as context_order
+from table1 ) as d
+left join users as c
+on d.user_id = c.user_id
+group by c.name, c.mail, d.context_order, d.user_id
+having count(*) >2
