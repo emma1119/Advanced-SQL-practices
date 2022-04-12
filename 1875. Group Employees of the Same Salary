@@ -1,0 +1,40 @@
+# A company wants to divide the employees into teams such that all the members on each team have the same salary. The teams should follow these criteria:
+
+# Each team should consist of at least two employees.
+# All the employees on a team should have the same salary.
+# All the employees of the same salary should be assigned to the same team.
+# If the salary of an employee is unique, we do not assign this employee to any team.
+# A team's ID is assigned based on the rank of the team's salary relative to the other teams' salaries, where the team with the lowest salary has team_id = 1. Note that the salaries for employees not on a team are not included in this ranking.
+# Write an SQL query to get the team_id of each employee that is in a team.
+
+# Return the result table ordered by team_id in ascending order. In case of a tie, order it by employee_id in ascending order.
+
+# （LeetCode）
+# https://leetcode-cn.com/problems/group-employees-of-the-same-salary
+
+
+# Write your MySQL query statement below
+
+# dense_rank() in case of tie, assign the same, then go to the next number
+# row_number() in case of tie, will still assign different number per record
+
+select 
+a.employee_id,
+a.name,
+a.salary,
+dense_rank() over (order by a.salary) as team_id 
+from 
+employees a 
+inner join 
+(select
+salary,
+count(distinct employee_id) as ct
+from
+employees 
+group by salary
+having count(distinct employee_id) >=2)
+b 
+on a.salary = b.salary
+order by team_id, employee_id
+
+
