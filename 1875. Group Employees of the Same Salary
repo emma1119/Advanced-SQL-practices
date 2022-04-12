@@ -35,6 +35,27 @@ group by salary
 having count(distinct employee_id) >=2)
 b 
 on a.salary = b.salary
-order by team_id, employee_id
+order by team_id, employee_id;
+
+# You are running an e-commerce site that is looking for imbalanced orders. An imbalanced order is one whose maximum quantity is strictly greater than the average quantity of every order (including itself).
+
+# LeetCode
+# https://leetcode-cn.com/problems/orders-with-maximum-quantity-above-average
+
+# Write your MySQL query statement below
+
+# understanding the question is the key
+
+select distinct order_id 
+from 
+ordersdetails 
+group by order_id
+having max(quantity) > 
+(select max(avg_num) from
+ (select order_id, 
+ sum(quantity)/count(distinct product_id) as avg_num
+ from ordersdetails
+group by order_id) a)
+
 
 
