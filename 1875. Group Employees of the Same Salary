@@ -57,5 +57,29 @@ having max(quantity) >
  from ordersdetails
 group by order_id) a)
 
+1917. Leetcodify Friends Recommendations
+# Write your MySQL query statement below
+#先求同一日听3首以上的歌的人，再剔除非好友的数据。
+
+select 
+distinct
+a.user_id,
+a.recommended_id
+from 
+(select 
+a.user_id ,
+b.user_id as recommended_id
+from listens as a 
+left join listens as b 
+on a.song_id = b.song_id and a.day = b.day
+where a.user_id != b.user_id
+group by a.user_id, b.user_id, a.day
+having count(distinct a.song_id) >=3 ) as a 
+left join 
+friendship as b 
+on (a.user_id = b.user1_id and a.recommended_id = b.user2_id)
+or (a.user_id = b.user2_id and a.recommended_id = b.user1_id)
+where b.user2_id is null
+
 
 
