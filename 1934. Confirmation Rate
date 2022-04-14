@@ -1,0 +1,22 @@
+# Write your MySQL query statement below
+#1934. Confirmation Rate
+#  confirmed / requested 
+
+# understand what it is asking for and use count() and sum(if(,))
+
+The confirmation rate of a user is the number of 'confirmed' messages divided by the total number of requested confirmation messages. The confirmation rate of a user that did not request any confirmation messages is 0. Round the confirmation rate to two decimal places.
+
+Write an SQL query to find the confirmation rate of each user.
+
+（LeetCode）
+https://leetcode-cn.com/problems/confirmation-rate
+
+select 
+b.user_id,
+round(ifnull(sum(if(a.action='confirmed',1, 0))/count(a.user_id),0),2) as confirmation_rate
+from 
+signups as b 
+left join
+confirmations as a 
+on b.user_id = a.user_id
+group by b.user_id
