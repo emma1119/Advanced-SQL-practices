@@ -50,3 +50,22 @@ from
 a_table
 where ref in (select ref from a_table group by ref having count(*) >2 )
 order by visit_date asc
+
+
+# 1939. Users That Actively Request Confirmation Messages
+
+# Write your MySQL query statement below
+
+# Write an SQL query to find the IDs of the users that requested a confirmation message twice within a 24-hour window. 
+
+
+select 
+a.user_id
+from confirmations as a 
+inner join 
+confirmations as b 
+on a.user_id = b.user_id 
+and TIMESTAMPDIFF(second, a.time_stamp, b.time_stamp) between 0 and 24*60*60
+and a.time_stamp != b.time_stamp
+group by a.user_id
+having count(b.user_id) > 0
