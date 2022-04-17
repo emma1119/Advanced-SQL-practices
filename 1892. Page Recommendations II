@@ -1,0 +1,100 @@
+#1892. Page Recommendations II
+# Write your MySQL query statement below
+
+# You are implementing a page recommendation system for a social media website. Your system will recommended a page to user_id if the page is liked by at least one friend of user_id and is not liked by user_id.
+
+# LeetCode
+# https://leetcode-cn.com/problems/page-recommendations-ii
+
+# Step 1:
+# create a two way relationship table using the table union so that each user will be considered to be 
+# recommented
+
+#left join the like by their friend and not liked by them already(left join where b.id is null)
+
+#having the count > 0
+
+select 
+a.user1_id as user_id,
+b.page_id,
+count(distinct user2_id) as friends_likes
+from 
+(select user1_id, user2_id
+from 
+Friendship 
+union all 
+select user2_id as user1_id, user1_id as user2_id
+from 
+Friendship)
+as a 
+left join 
+Likes as b 
+on a.user2_id = b.user_id 
+left join 
+Likes as c
+on a.user1_id = c.user_id  and b.page_id = c.page_id
+where c.page_id is null
+group by a.user1_id, b.page_id
+having count(distinct user2_id) >0
+
+
+#1919. Leetcodify Similar Friends
+
+# Write your MySQL query statement below
+
+# join to find the same song and day by their friend, not themselves 
+# select distinct , group by id, id2, day --->to select more than 2 on the same date
+# having(count distinct song_id) so count distinct songs more thant two!!!
+
+# Return the result table in any order. Note that you must return the similar pairs of friends the same way they were represented in the input (i.e., always user1_id < user2_id).
+# 因结果只需要a，b 不需要b，a pair，所以不需要union all 创造双向relationship table
+
+
+select
+distinct 
+c.user1_id,
+c.user2_id
+from friendship as c
+inner join 
+listens as a
+on a.user_id = c.user1_id 
+inner join 
+listens  as b
+on a.song_id=b.song_id and a.day=b.day 
+and a.user_id!=b.user_id and b.user_id = c.user2_id
+group by a.user_id, b.user_id, a.day
+having(count(distinct a.song_id)>2)
+
+
+# 1949. Strong Friendship
+
+# A friendship between a pair of friends x and y is strong if x and y have at least three common friends.
+# Write an SQL query to find all the strong friendships.
+
+# Note that the result table should not contain duplicates with user1_id < user2_id.
+
+
+
+# Write your MySQL query statement below
+# 因为需要从 id 1 ， id 2 的角度各自求full list，所以需要union all
+# 先把关系union all 再left join两次找出a的所有盆友，b的所有朋友，where朋友相同
+
+with t as(
+    SELECT * FROM Friendship
+    UNION ALL
+    SELECT user2_id, user1_id FROM Friendship
+)
+SELECT
+    f1.user1_id,
+    f1.user2_id,
+    COUNT(*) AS common_friend
+FROM Friendship f1
+LEFT JOIN t f2 ON f1.user1_id = f2.user1_id  #找到 user1 所有朋友
+LEFT JOIN t f3 ON f1.user2_id = f3.user1_id  #找到 user2 所有朋友
+WHERE f2.user2_id = f3.user2_id   # 双方朋友一样
+and  f1.user1_id < f1.user2_id    # 只要1小于2 的关系
+GROUP BY f1.user1_id, f1.user2_id
+HAVING COUNT(*) >= 3
+;
+
+
