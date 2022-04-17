@@ -1,0 +1,52 @@
+# 262. Trips and Users
+
+#The cancellation rate is computed by dividing the number of canceled (by client or driver) requests with unbanned users by the total number of requests with unbanned users on that day.
+
+#Write a SQL query to find the cancellation rate of requests with unbanned users (both client and driver must not be banned) each day between "2013-10-01" and "2013-10-03". Round Cancellation Rate to two decimal points.
+
+#https://leetcode-cn.com/problems/trips-and-users
+
+
+# Write your MySQL query statement below
+# use single quote around column name where it has a space in between
+
+select 
+a.request_at as Day,
+round(ifnull(sum(if(status like 'cancelled%',1,0))/count(distinct id),0),2) as 'Cancellation Rate'
+from trips as a 
+inner join 
+users as b 
+on a.client_id = b.users_id  and b.role = 'client'
+inner join 
+users as c
+on a.driver_id = c.users_id and c.role = 'driver'
+where b.banned = 'No'  and c.banned = 'No'
+and a.request_at between '2013-10-01' and '2013-10-03' 
+group by a.request_at
+
+
+#601. Human Traffic of Stadium
+# Write your MySQL query statement below
+
+# Write an SQL query to display the records with three or more rows with consecutive id's, and the number of people is greater than or equal to 100 for each.
+
+# 按照条件的连续排序，where要先于window function 考虑 才能起到过滤条件后的排序作用
+# 通过 where ref in 符合条件的ref选择原数据 去select 不在这个 ref aggregation 里面的field
+
+with a_table as 
+(select 
+id,
+visit_date,
+people,
+id - row_number() over (order by id) as ref
+from stadium 
+where people >= 100
+) 
+select 
+id,
+visit_date,
+people
+from
+a_table
+where ref in (select ref from a_table group by ref having count(*) >2 )
+order by visit_date asc
