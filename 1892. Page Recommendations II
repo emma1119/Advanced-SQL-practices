@@ -41,13 +41,17 @@ having count(distinct user2_id) >0
 #1919. Leetcodify Similar Friends
 
 # Write your MySQL query statement below
+# Write an SQL query to report the similar friends of Leetcodify users. A user x and user y are similar friends if:
 
-# join to find the same song and day by their friend, not themselves 
+# Users x and y are friends, and
+# Users x and y listened to the same three or more different songs on the same day.
+
 # select distinct , group by id, id2, day --->to select more than 2 on the same date
 # having(count distinct song_id) so count distinct songs more thant two!!!
 
 # Return the result table in any order. Note that you must return the similar pairs of friends the same way they were represented in the input (i.e., always user1_id < user2_id).
-# 因结果只需要a，b 不需要b，a pair，所以不需要union all 创造双向relationship table
+# 思路：先找同一天内听了同样歌的两个人。再确认这两个人是不是朋友。
+# 因只需要判断是不是朋友，所以不需要union all 创造双向relationship table
 
 
 select
