@@ -25,3 +25,80 @@ with t as
 select user1_id,user2_id
 from t
 where cnt =(select max(cnt) from t)
+
+
+#1965. Employees With Missing Information
+
+# Write your MySQL query statement below
+
+# when creating recursive table the second table needs to select from the table t itself
+
+# with recursive t as 
+# (select 1 as id union all
+# select id+1 as id from t where id+1<= (select max(employee_id) from employees ))
+# select 
+# t.id 
+# from t 
+# left join 
+# employees as a 
+# on t.id = a.employee_id 
+# left join 
+# Salaries as b
+# on t.id = b.employee_id 
+# where a.employee_id is null or b.employee_id is null
+# order by t.id asc
+
+select a.employee_id
+from 
+(select  employee_id from employees
+union 
+select  employee_id from Salaries) a 
+left join 
+employees as b on a.employee_id = b.employee_id
+left join 
+Salaries as c on a.employee_id = c.employee_id
+where b.employee_id is null or c.employee_id is null
+order by a.employee_id asc
+
+
+# 1972. First and Last Call On the Same Day
+
+# Write an SQL query to report the IDs of the users whose first and last calls on any day were with the same person. Calls are counted regardless of being the caller or the recipient.
+
+
+# Write your MySQL query statement below
+
+
+# first create a table with call_day and create a table with all call_id
+# rank the call from the earliest to latest , rk1 and rk2 
+# self-join on the same caller and latest and earlist with the same person
+
+with c as
+(select 
+caller_id, 
+recipient_id,
+left(call_time,10) as call_day,
+call_time
+from calls 
+union 
+select 
+recipient_id as caller_id,
+caller_id as recipient_id,
+left(call_time,10) as call_day,
+call_time
+from calls ),
+table_rank as
+(select 
+caller_id,
+call_day,
+recipient_id,
+dense_rank() over (partition by caller_id, call_day order by call_time asc ) as rk ,
+dense_rank() over (partition by caller_id, call_day order by call_time desc ) as rk_desc 
+from c ) 
+select distinct
+a.caller_id as user_id
+from table_rank as a 
+inner join 
+table_rank as b 
+on a.caller_id = b.caller_id and a.call_day = b.call_day and a.recipient_id = b.recipient_id
+where a.rk = 1 and b.rk_desc=1 
