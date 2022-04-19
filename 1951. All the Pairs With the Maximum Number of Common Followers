@@ -1,8 +1,19 @@
-#1951. All the Pairs With the Maximum Number of Common Followers
+# Write your MySQL query statement below
 
 
-#寻找最多common follower，
-#利用共同follower_id, 先inner join，形成两两关系，再group by这两个两个id，选择最大配对数
+# Write an SQL query to find all the pairs of users with the maximum number of common followers. In other words, if the maximum number of common followers between any two users is maxCommon, then you have to return all pairs of users that have maxCommon common followers.
+
+# Input: 
+# Relations table:
+# +---------+-------------+
+# | user_id | follower_id |
+# +---------+-------------+
+# | 1       | 3           |
+# | 2       | 3           |
+# | 7       | 3           |
+# | 1       | 4           |
+
+#寻找最多common follower，先inner join 根据follower_id, 形成两两关系，再group by两个id
 
 with t as
     (select r1.user_id as user1_id, r2.user_id as user2_id, count(1) as cnt
