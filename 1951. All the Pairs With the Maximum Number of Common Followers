@@ -102,3 +102,14 @@ inner join
 table_rank as b 
 on a.caller_id = b.caller_id and a.call_day = b.call_day and a.recipient_id = b.recipient_id
 where a.rk = 1 and b.rk_desc=1 
+
+
+#2020. Number of Accounts That Did Not Stream
+# Write your MySQL query statement below
+
+select 
+count(distinct account_id) as accounts_count
+from subscriptions 
+where year(start_date) <=2021 and year(end_date) >=2021
+and account_id not in 
+(select account_id from streams where year(stream_date)=2021)
