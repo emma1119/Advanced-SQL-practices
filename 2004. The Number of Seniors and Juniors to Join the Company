@@ -1,0 +1,38 @@
+2004. The Number of Seniors and Juniors to Join the Company
+
+# Write your MySQL query statement below
+# calculate the rolling sum() by experience and salary seperated by junior and senior
+# join by b.rolling_sum<=70000-(select ifnull(max(rolling_sum),0) from senior where rolling_sum<=70000)
+
+with senior as 
+( 
+select 
+employee_id,
+experience,
+salary,
+sum(salary) over (order by experience, salary) as rolling_sum
+from candidates 
+where experience='Senior'
+ ),
+junior as 
+(
+select 
+employee_id,
+experience,
+salary,
+sum(salary) over (order by experience, salary) as rolling_sum
+from candidates 
+where experience='Junior'
+)
+select
+'Senior' as experience,
+ifnull(count(distinct a.employee_id),0) as  accepted_candidates
+from senior as a 
+where a.rolling_sum<=70000
+union all 
+select
+'Junior' as experience,
+ifnull(count(distinct b.employee_id),0) as  accepted_candidates
+from
+junior as b 
+where b.rolling_sum<=70000-(select ifnull(max(rolling_sum),0) from senior where rolling_sum<=70000)
