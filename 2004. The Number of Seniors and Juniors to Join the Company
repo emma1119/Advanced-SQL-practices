@@ -80,3 +80,37 @@ from junior
 where total_sum <=70000-(select ifnull(max(total_sum),0) from Senior where total_sum <=70000);
 
 
+2051. The Category of Each Member in the Store
+
+select 
+c.member_id,
+c.name,
+case  when 
+100*count(b.charged_amount)/count(a.visit_date) >=80 then 'Diamond'
+when 100*count(b.charged_amount)/count(a.visit_date) >= 50 then 'Gold'
+when 100*count(b.charged_amount)/count(a.visit_date) >=0 then 'Silver'
+else 'Bronze' end as category
+from members as c 
+left join 
+visits as a on a.member_id = c.member_id
+left join 
+purchases as b on a.visit_id = b.visit_id
+group by c.member_id,
+c.name
+
+2066. Account Balance
+# 同一个账户的rolling sum只需要partition by id order by date
+select 
+account_id,
+day,
+sum(mod_amount) over (partition by account_id order by day) as balance
+from 
+(select 
+account_id,
+day,
+type,
+case when type = 'Deposit' then amount
+else -amount end as mod_amount
+from transactions ) as  a 
+order by account_id, day 
+
