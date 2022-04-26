@@ -36,3 +36,47 @@ ifnull(count(distinct b.employee_id),0) as  accepted_candidates
 from
 junior as b 
 where b.rolling_sum<=70000-(select ifnull(max(rolling_sum),0) from senior where rolling_sum<=70000)
+
+
+
+2010. The Number of Seniors and Juniors to Join the Company II
+# Write your MySQL query statement below
+
+# Keep hiring the senior with the smallest salary until you cannot hire any more seniors.
+# Use the remaining budget to hire the junior with the smallest salary.
+# Keep hiring the junior with the smallest salary until you cannot hire any more juniors.
+# Write an SQL query to find the ids of seniors and juniors hired under the mentioned criteria.
+
+
+with 
+Senior 
+as 
+(select employee_id,
+experience,
+salary,
+sum(salary) over (order by salary) as total_sum
+from candidates 
+where experience = 'Senior'
+),
+junior 
+as 
+(select employee_id,
+experience,
+salary,
+sum(salary) over (order by salary) as total_sum
+from candidates 
+where experience = 'junior'
+)
+select 
+distinct 
+employee_id
+from senior as a 
+where total_sum <=70000
+union all 
+select 
+distinct 
+employee_id
+from junior  
+where total_sum <=70000-(select ifnull(max(total_sum),0) from Senior where total_sum <=70000);
+
+
