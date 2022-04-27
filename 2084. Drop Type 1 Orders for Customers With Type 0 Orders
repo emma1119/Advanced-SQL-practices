@@ -30,3 +30,29 @@ select order_id, customer_id, order_type from
 dense_rank() over (partition by customer_id order by order_type) rk 
 from Orders) a 
 where rk=1
+
+
+2112. The Airport With the Most Traffic
+# Write your MySQL query statement below
+with t1 as 
+(select 
+departure_airport as airport,
+flights_count as ct 
+from flights 
+union all 
+select 
+arrival_airport as airport,
+flights_count as ct 
+from flights )
+select airport as airport_id
+from 
+t1 
+group by airport
+having sum(ct) = (select max(ct) from ( select airport, sum(ct) as ct from t1 group by airport )a )
+
+# 表示等于最大值可以用 order by limit 1 
+# having sum(ct) = (select sum(ct) as ct
+#                              from t
+#                              group by airport
+#                              order by ct desc
+#                              limit 1)
