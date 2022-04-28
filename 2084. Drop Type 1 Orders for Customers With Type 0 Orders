@@ -74,3 +74,25 @@ select concat(GROUP_CONCAT(equ  order by power desc SEPARATOR ""),'=0') as equat
 from table1
 
 
+# Write your MySQL query statement below
+
+# 2142. The Number of Passengers in Each Bus I
+# remember to group by , join by min arrival_time
+
+select 
+a.bus_id,
+ifnull(count(distinct b.passenger_id),0) as passengers_cnt
+from 
+Buses as a 
+left join 
+(select 
+passenger_id,
+min(b.arrival_time) as arrival_time
+from passengers as a 
+left join 
+buses as b 
+on a.arrival_time <= b.arrival_time
+group by passenger_id) as b 
+on a.arrival_time = b.arrival_time
+group by a.bus_id
+ORDER BY a.bus_id
