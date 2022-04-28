@@ -56,3 +56,21 @@ having sum(ct) = (select max(ct) from ( select airport, sum(ct) as ct from t1 gr
 #                              group by airport
 #                              order by ct desc
 #                              limit 1)
+
+
+
+# 2118. Build the Equation
+
+# use group_concate to concat all records in the table can specify order by and separator "" 
+
+with table1 as 
+(select 
+case when power=0 then concat(if(factor<0,'-','+'),abs(factor))
+when power=1 then concat(if(factor<0,'-','+'),abs(factor),'X')
+else concat(if(factor<0,'-','+'),abs(factor),'X^',power) end as equ ,
+power
+from terms)
+select concat(GROUP_CONCAT(equ  order by power desc SEPARATOR ""),'=0') as equation
+from table1
+
+
