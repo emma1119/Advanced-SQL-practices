@@ -96,3 +96,28 @@ group by passenger_id) as b
 on a.arrival_time = b.arrival_time
 group by a.bus_id
 ORDER BY a.bus_id
+
+
+# Write your MySQL query statement below
+
+# 2159. Order Two Columns Independently
+
+#如果需要在并列情况下assign unique value需要用row_number（），1,2,3
+#使用dense_rank() 会assign相同value ， 1,1,2
+
+select 
+a.first_col,
+b.second_col
+from
+(select 
+first_col,
+row_number() over (order by first_col) as rk
+from data ) as a 
+inner join 
+(select 
+second_col,
+row_number() over (order by second_col desc) as rk
+from data) as b
+on a.rk=b.rk
+order by a.rk 
+
