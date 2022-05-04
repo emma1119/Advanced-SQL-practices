@@ -102,3 +102,61 @@ from TeamPoints) as a
 left join 
 pointschange as b 
 on a.team_id = b.team_id
+
+
+# 2173. Longest Winning Streak
+
+# The winning streak of a player is the number of consecutive wins uninterrupted by draws or losses.
+
+# Write an SQL query to count the longest winning streak for each player.
+
+# Return the result table in any order.
+
+# The query result format is in the following example.
+# +-----------+------------+--------+
+# | player_id | match_day  | result |
+# +-----------+------------+--------+
+# | 1         | 2022-01-17 | Win    |
+# | 1         | 2022-01-18 | Win    |
+# | 1         | 2022-01-25 | Win    |
+# | 1         | 2022-01-31 | Draw   |
+# | 1         | 2022-02-08 | Win    |
+# | 2         | 2022-02-06 | Lose   |
+# | 2         | 2022-02-08 | Lose   |
+# | 3         | 2022-03-30 | Win    |
+# +-----------+------------+--------+
+# Output: 
+# +-----------+----------------+
+# | player_id | longest_streak |
+# +-----------+----------------+
+# | 1         | 3              |
+# | 2         | 0              |
+# | 3         | 1              |
+
+
+# Write your MySQL query statement below
+# 排名做差 分辨连续的instance用于group，再单独算每个group最多win有多少
+# 如果没有用0
+
+select 
+a.player_id,
+max(ct) as longest_streak
+from 
+(select 
+b.player_id,
+cast(rk as SIGNED)-cast(rk_r as SIGNED) ,
+ifnull(count(if(result='win',1,null)),0) as ct
+from
+(   
+select 
+player_id,
+result,
+row_number() over (partition by player_id order by match_day) as rk,
+row_number() over (partition by player_id,result order by match_day) as rk_r,
+match_day
+from matches 
+) b 
+group by b.player_id, cast(rk as SIGNED)-cast(rk_r as SIGNED) ) a 
+group by player_id
+
+
