@@ -160,3 +160,22 @@ group by b.player_id, cast(rk as SIGNED)-cast(rk_r as SIGNED) ) a
 group by player_id
 
 
+# Write your MySQL query statement below
+# 2228. Users With Two Purchases Within Seven Days
+
+with orders as 
+(select
+user_id,
+purchase_date,
+row_number() over (partition by user_id order by purchase_date) as rk
+from Purchases)
+select 
+distinct
+a.user_id
+from orders as a 
+inner join 
+orders as b 
+on a.user_id = b.user_id and a.rk=b.rk-1
+where datediff(b.purchase_date, a.purchase_date)<=7
+
+
