@@ -249,3 +249,19 @@ group by post_id
 # then 'Ambiguous!' else ''  end as c4
 # from posts) a
 # group by post_id
+
+
+###2252. Dynamic Pivoting of a Table
+# 使用max(case when ...) pivot 一个long table to wide table
+CREATE PROCEDURE PivotProducts()
+BEGIN
+	# Write your MySQL query statement below.
+	select product_id,
+    max(case when store = 'LC_Store' then price else null end) as LC_Store,
+    max(case when store = 'Nozama' then price else null end) as Nozama,
+    max(case when store = 'Shop' then price else null end) as Shop,
+    max(case when store = 'Souq' then price else null end) as Souq
+    from products
+    group by product_id
+    order by product_id;
+END
