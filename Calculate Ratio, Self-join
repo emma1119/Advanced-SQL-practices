@@ -213,4 +213,39 @@ from table1 ) as d
 left join users as c
 on d.user_id = c.user_id
 group by c.name, c.mail, d.context_order, d.user_id
-having count(*) >2
+having count(*) >2;
+
+
+# Use instr(a,b)>0 to fuzzy join
+#2199. Finding the Topic of Each Post
+# Write your MySQL query statement below
+
+# The INSTR() function returns the position of the first occurrence of a string in another string.
+# word's position func in content
+
+
+# instr(concat(' ',content,' '),concat(' ',word,' '))>0
+
+select post_id,ifnull(group_concat(distinct topic_id),'Ambiguous!') as topic
+from posts
+left join keywords
+on instr(concat(' ',content,' '),concat(' ',word,' '))>0
+group by post_id
+
+
+# select post_id,
+# group_concat(c1,c2,c3,c4 order by c1 SEPARATOR ',')
+# from 
+# (select 
+# post_id,
+# case when lower(content) like '%handball%' or lower(content) like '%football%' then '1' 
+# else '' end as c1,
+# case when lower(content) like '%war %' then '3'
+# else ''  end as c2 ,
+# case when lower(content) like '%vaccine%' then '2'
+# else ''  end as c3,
+# case when lower(content) not like '%handball%' and lower(content) not like '%football%' 
+# and lower(content) not like '%war %' and lower(content) not like '%vaccine%'
+# then 'Ambiguous!' else ''  end as c4
+# from posts) a
+# group by post_id
