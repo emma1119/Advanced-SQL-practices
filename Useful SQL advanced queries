@@ -1,4 +1,6 @@
--- assign a list of month's first date based on the current_date
+
+
+-- assign a seqquence of the list of month's first date for the last 5 months based on the current_date
 
 create table if not exists date_temp
 (seq string, start_dt string, process_date string) store as parquet;
@@ -11,5 +13,15 @@ select '3', date_add(last_day(add_month(${current_date},-4),1), {$endDate}
 union all 
 select '4', date_add(last_day(add_month(${current_date},-5),1), {$endDate}
 union all 
-select '5', date_add(last_day(add_month(${current_date},-6),1), {$endDate}
+select '5', date_add(last_day(add_month(${current_date},-6),1), {$endDate};
 
+
+
+-- pilot a tall table into a wide table 
+
+select date_var
+,max(case when metricid = '001' then metricvalue else null end) as score001
+,max(case when metricid = '002' then metricvalue else null end) as score002
+,max(case when metricid = '003' then metricvalue else null end) as score003
+from raw_table
+group by date_var;
