@@ -36,3 +36,12 @@ date_var
 , (value -lag(value, 12) over (order by date_var))/coalesce(lag(value, 1) over (order by date_var) ,12) as YoY
 from 
 table1;
+
+
+-- use case 4
+-- use regular expression to identify non usual emails: regexp_extract fetch for a pattern specified
+select 
+case when 
+regexp_extract(lower(email_address), '^.+@[^\.].*\.[a-z]{2.}$',0' != lower(email_address) then 'invalid'
+else 'Valid' end as email_val
+from email_table;
