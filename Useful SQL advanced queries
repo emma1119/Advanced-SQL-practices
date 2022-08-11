@@ -1,5 +1,5 @@
 
-
+-- use case 1
 -- assign a seqquence of the list of month's first date for the last 5 months based on the current_date
 
 create table if not exists date_temp
@@ -16,8 +16,8 @@ union all
 select '5', date_add(last_day(add_month(${current_date},-6),1), {$endDate};
 
 
-
--- pilot a tall table into a wide table 
+-- use case 2
+-- pilot a tall format table into a wide table 
 
 select date_var
 ,max(case when metricid = '001' then metricvalue else null end) as score001
@@ -25,3 +25,14 @@ select date_var
 ,max(case when metricid = '003' then metricvalue else null end) as score003
 from raw_table
 group by date_var;
+
+
+-- use case 3
+-- MoM and YoY calculation 
+select 
+date_var
+, lag(value, 1) over (order by date_var) as delta
+, (value -lag(value, 1) over (order by date_var))/coalesce(lag(value, 1) over (order by date_var) ,1) as MOM
+, (value -lag(value, 12) over (order by date_var))/coalesce(lag(value, 1) over (order by date_var) ,12) as YoY
+from 
+table1;
