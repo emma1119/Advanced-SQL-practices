@@ -1,0 +1,15 @@
+-- assign a list of month's first date based on the current_date
+
+create table if not exists date_temp
+(seq string, start_dt string, process_date string) store as parquet;
+insert into table date_temp
+select '1', date_add(last_day(add_month(${current_date},-2),1), {$endDate}
+union all 
+select '2', date_add(last_day(add_month(${current_date},-3),1), {$endDate}
+union all 
+select '3', date_add(last_day(add_month(${current_date},-4),1), {$endDate}
+union all 
+select '4', date_add(last_day(add_month(${current_date},-5),1), {$endDate}
+union all 
+select '5', date_add(last_day(add_month(${current_date},-6),1), {$endDate}
+
